@@ -57,9 +57,45 @@ kubectl rollout status deployment/nginx-deploy -n web-lab
 ✓
 Wait until you see **successfully rolled out**.
 --------------------------------------------------------
-
+Inspect the Deployment, ReplicaSet, and Pods
+Before scaling, take time to understand the objects Kubernetes created for you.
+1. View the Deployment summary:
+kubectl get deployment nginx-deploy -n web-lab
+✓
+2. View the ReplicaSet that the Deployment created:
+kubectl get replicaset -n web-lab
+✓
+3. List the individual Pods and note their names:
+kubectl get pods -n web-lab -o wide
+✓
+4. Describe the Deployment to see events and replica counts:
+kubectl describe deployment nginx-deploy -n web-lab
+✓
+Notice the **READY**, **UP-TO-DATE**, and **AVAILABLE** columns in the Deployment output. You should see 
+2/2
+✓
+ ready. Also observe that the ReplicaSet name is the Deployment name with a hash suffix, and each Pod name adds another hash on top of that.
+Verify that exactly **2** pods are in the 
+Running
+✓
+ phase before moving on.
 --------------------------------------------------------
-
+Scale the Deployment Up to 5 Replicas
+Kubernetes makes it trivial to scale a Deployment. You can use the imperative 
+kubectl scale
+✓
+ command or patch the manifest and re-apply it. In this task use the imperative command.
+1. Scale the Deployment up to 5 replicas:
+kubectl scale deployment nginx-deploy --replicas=5 -n web-lab
+✓
+2. Watch the new pods appear in real time (press Ctrl+C to stop watching):
+kubectl get pods -n web-lab -w
+✓
+3. Once all pods are ready, confirm the Deployment status:
+kubectl get deployment nginx-deploy -n web-lab
+✓
+copy
+You should see **5/5** in the READY column. Kubernetes created 3 additional pods to match your new desired state — this is the reconciliation loop in action.
 --------------------------------------------------------
 
 --------------------------------------------------------
