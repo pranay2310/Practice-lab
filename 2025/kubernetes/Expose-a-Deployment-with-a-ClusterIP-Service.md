@@ -139,3 +139,39 @@ kubectl exec -n web-demo <pod-name> -- curl -s http://nginx-svc
 POD=$(kubectl get pods -n web-demo -l app=nginx-web -o jsonpath='{.items[0].metadata.name}')
 kubectl exec -n web-demo $POD -- curl -s http://nginx-svc.web-demo.svc.cluster.local
  -----------------------------------------------------------------------------
+ Access the Service from the Toolbox via Port-Forward
+ClusterIP Services are only reachable inside the cluster. To access the Service from your toolbox container (outside the cluster network), use 
+kubectl port-forward
+✓
+.
+1. Start port-forwarding the 
+nginx-svc
+✓
+ Service to local port 
+8080
+✓
+ in the **background**:
+kubectl port-forward service/nginx-svc 8080:80 -n web-demo &
+Copy
+The 
+&
+✓
+ runs the command in the background so you keep your shell prompt.
+2. Wait a moment, then send a request to 
+localhost:8080
+✓
+:
+curl -s http://localhost:8080 | head -5
+✓
+You should see the first 5 lines of the nginx welcome page.
+3. Bring the port-forward back to the foreground and stop it when done:
+fg
+✓
+ then press 
+Ctrl+C
+✓
+**Why this works:** 
+kubectl port-forward
+✓
+ tunnels traffic from your local port through the Kubernetes API server into the cluster, forwarding it to the Service's ClusterIP and then to a pod.
+Show hint
