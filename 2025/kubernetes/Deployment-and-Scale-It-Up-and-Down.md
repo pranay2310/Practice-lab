@@ -97,7 +97,25 @@ kubectl get deployment nginx-deploy -n web-lab
 copy
 You should see **5/5** in the READY column. Kubernetes created 3 additional pods to match your new desired state — this is the reconciliation loop in action.
 --------------------------------------------------------
-
+Scale the Deployment Down to 2 Replicas
+Scaling down is just as easy as scaling up. Kubernetes will gracefully terminate the excess pods.
+1. Scale the Deployment back down to 2 replicas:
+kubectl scale deployment nginx-deploy --replicas=2 -n web-lab
+✓
+2. Watch the pods terminate:
+kubectl get pods -n web-lab -w
+✓
+You will see 3 pods move through 
+Terminating
+✓
+ and disappear. Press Ctrl+C once stable.
+3. Verify the final state of the Deployment:
+kubectl get deployment nginx-deploy -n web-lab
+✓
+4. Confirm only 2 pods remain running:
+kubectl get pods -n web-lab
+✓
+You should see **2/2** ready and exactly 2 pods listed. The ReplicaSet still exists (with its history) but it now manages only 2 active pods. This is the full scale-up/scale-down lifecycle of a Kubernetes Deployment.
 --------------------------------------------------------
 
 --------------------------------------------------------
