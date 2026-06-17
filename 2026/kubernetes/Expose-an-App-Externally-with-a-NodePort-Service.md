@@ -158,3 +158,30 @@ kubectl patch deployment web -n webdemo -p '{"spec":{"template":{"metadata":{"la
 ✓
 copy.
 ----------------------------------------------------------------
+Test External Access via NodePort
+With the NodePort Service in place, verify that the application is reachable through the node's IP address on port 30080.
+**Step 1 — Find the node's internal IP:**
+kubectl get nodes -o wide
+✓
+Note the 
+INTERNAL-IP
+✓
+ of your kind node (e.g. 
+172.18.0.2
+✓
+).
+**Step 2 — Curl the NodePort:**
+NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
+curl -s http://${NODE_IP}:30080
+Copy
+You should see the default **nginx Welcome page** HTML in the response.
+**Step 3 — Confirm load balancing across pods:**
+for i in $(seq 1 6); do
+  curl -s http://${NODE_IP}:30080 | grep -o '<title>.*</title>'
+done
+Copy
+All 6 requests should return the nginx welcome title, proving the Service is routing traffic correctly to both replicas.
+**Bonus:** Run 
+kubectl logs -n webdemo -l app=web
+✓
+ and observe access log entries appearing on both pods.
